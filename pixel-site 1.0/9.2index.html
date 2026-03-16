@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Миллион Пикселей 2026 | 1000×1000</title>
+    <meta name="description" content="Купи свой кусочек интернета навсегда! Цена ×1.1 после каждой продажи.">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Press Start 2P', cursive, Arial, sans-serif;
+            background: #0a0a0a;
+            color: #0f0;
+            line-height: 1.5;
+            overflow-x: hidden;
+            transition: all 0.6s;
+        }
+        body.neon {
+            background: linear-gradient(135deg, #0f001a, #1a001a);
+            color: #ff00ff;
+        }
+        body.neon .arrow { color: #ff00ff; text-shadow: 0 0 20px #ff00ff; }
+        body.neon .vip-zone { background: linear-gradient(45deg, #00ffff, #ff00ff); border-color: #00ffff; box-shadow: 0 0 25px #00ffff; }
+        body.neon header { border-bottom-color: #ff00ff; }
+        body.neon .buy-btn-big, body.neon .buy-btn { background: #ff00ff; color: #000; box-shadow: 0 0 40px #ff00ff; }
+
+        .header-controls { position: absolute; top: 15px; z-index: 30; display: flex; gap: 10px; }
+        .lang-switch, .theme-toggle {
+            background: rgba(0,0,0,0.7); padding: 5px 10px;
+            border: 2px solid #0f0; border-radius: 6px; font-size: 0.85rem; cursor: pointer;
+        }
+        .theme-toggle.active { background: #0f0; color: #000; }
+
+        .timer-box {
+            background: rgba(0,0,0,0.85); padding: 8px 14px;
+            border: 2px solid #0f0; border-radius: 6px; font-size: 0.85rem; line-height: 1.3;
+        }
+
+        header { text-align: center; padding: 70px 15px 40px; background: linear-gradient(to bottom, #000, #111); border-bottom: 6px solid #0f0; position: relative; }
+        h1 { font-size: clamp(2.2rem, 7vw, 4rem); margin: 0 0 12px; text-shadow: 0 0 25px #0f0; }
+        .subtitle { font-size: clamp(1rem, 4vw, 1.4rem); }
+
+        .board-wrapper { width: 1000px; max-width: 100%; margin: 40px auto; position: relative; }
+        #pixel-board {
+            width: 1000px; height: 1000px; max-width: 100%;
+            border: 8px solid #0f0; box-shadow: 0 0 50px rgba(0,255,0,0.6);
+            background: #000; image-rendering: pixelated;
+            background-image: linear-gradient(to right, rgba(0,255,0,0.07) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0,255,0,0.07) 1px, transparent 1px);
+            background-size: 10px 10px;
+            cursor: crosshair;
+        }
+
+        .arrow { position: absolute; font-size: clamp(3rem, 8vw, 6rem); color: #0f0; text-shadow: 0 0 20px #0f0; animation: pulse 2.4s infinite, bob 4s infinite; z-index: 5; }
+        .arrow-left1,.arrow-right1 { top: -8%; }
+        .arrow-left2,.arrow-right2 { top: 18%; }
+        .arrow-left3,.arrow-right3 { top: 44%; }
+        .arrow-left1  { left: -18%; } .arrow-right1 { right: -18%; transform: scaleX(-1); }
+        .arrow-left2  { left: -18%; } .arrow-right2 { right: -18%; transform: scaleX(-1); }
+        .arrow-left3  { left: -18%; } .arrow-right3 { right: -18%; transform: scaleX(-1); }
+
+        @keyframes pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+        @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(15px); } }
+
+        .pixel-block { position: absolute; border: 1px solid rgba(0,255,0,0.3); overflow: hidden; transition: all 0.3s; }
+        .pixel-block:hover { box-shadow: 0 0 25px #0f0; transform: scale(1.03); }
+        .pixel-block img { width: 100%; height: 100%; object-fit: cover; }
+
+        .vip-zone {
+            position: absolute; width: 20px; height: 20px;
+            background: linear-gradient(45deg, #ff00aa, #ffaa00);
+            border: 3px solid #ffff00; box-shadow: 0 0 20px #ffff00;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; color: #000; font-weight: bold; z-index: 6;
+        }
+
+        .progress-container { 
+            margin: 25px auto; 
+            width: 85%; 
+            max-width: 800px; 
+            background: #111; 
+            border: 3px solid #0f0; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            height: 42px;
+        }
+        .progress-bar { 
+            height: 100%; 
+            background: linear-gradient(to right, #0f0, #00ff88); 
+            width: 0%; 
+            transition: width 2s ease-out; 
+        }
+
+        .buy-btn-big {
+            display: block; margin: 35px auto; padding: 22px 60px;
+            background: #0f0; color: #000; font-size: 1.5rem; border: none; border-radius: 12px;
+            cursor: pointer; box-shadow: 0 0 40px rgba(0,255,0,0.7);
+            animation: pulse-btn 2s infinite;
+        }
+        @keyframes pulse-btn { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+        .buy-btn {
+            position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+            z-index: 100; background: #0f0; color: #000; padding: 14px 32px;
+            border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer;
+            box-shadow: 0 0 30px rgba(0,255,0,0.7); display: none;
+        }
+        @media (max-width: 768px) { .buy-btn { display: block; } .arrow { display: none; } .buy-btn-big { font-size: 1.3rem; padding: 18px 50px; } }
+
+        .share-buttons { text-align: center; margin: 25px 0; }
+        .share-btn { margin: 0 8px; padding: 10px 18px; background: #0f0; color: #000; border-radius: 6px; text-decoration: none; display: inline-block; }
+
+        section { max-width: 900px; margin: 40px auto; background: rgba(20,20,20,0.8); padding: 25px; border: 3px solid #0f0; border-radius: 8px; }
+        h2 { font-size: clamp(1.3rem, 4vw, 1.8rem); margin-top: 0; }
+        footer { text-align: center; padding: 40px; background: #000; border-top: 4px solid #0f0; }
+
+        /* МОДАЛКА */
+        #modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); z-index: 200; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: #111; border: 4px solid #0f0; padding: 25px; border-radius: 12px;
+            max-width: 380px; width: 90%; text-align: center; box-shadow: 0 0 40px #0f0;
+            position: relative;
+        }
+        body.neon .modal-content { border-color: #ff00ff; box-shadow: 0 0 40px #ff00ff; }
+        .modal-close {
+            position: absolute; top: 10px; right: 15px; font-size: 28px; cursor: pointer; color: #0f0;
+        }
+        .modal-price { font-size: 1.6rem; color: #ff0; margin: 15px 0; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-controls">
+        <div class="timer-box">
+            Рекорд: <span id="site-record">67</span> мин<br>
+            Твоё: <span id="personal-timer">0:00</span>
+        </div>
+        <div class="lang-switch">
+            <button id="btn-ru" class="active" onclick="switchLang('ru')">RU</button>
+            <button id="btn-en" onclick="switchLang('en')">EN</button>
+        </div>
+        <div class="theme-toggle" onclick="toggleNeon()">Neon</div>
+    </div>
+
+    <h1 id="title">МИЛЛИОН ПИКСЕЛЕЙ 2026</h1>
+    <p class="subtitle" id="subtitle">ОГРОМНАЯ ДОСКА 1000×1000 пикселей<br>Цена растёт ×1.1 после каждой продажи — чем раньше, тем дешевле!</p>
+</header>
+
+<div class="container">
+
+    <div class="board-wrapper">
+        <div class="arrow arrow-left1">▼</div><div class="arrow arrow-right1">▼</div>
+        <div class="arrow arrow-left2">▼</div><div class="arrow arrow-right2">▼</div>
+        <div class="arrow arrow-left3">▼</div><div class="arrow arrow-right3">▼</div>
+
+        <div id="pixel-board"></div>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="progress-text" id="progress-text" style="text-align:center; font-size:1.25rem; margin:8px 0;">
+        Продано 0% (0 / 1 000 000 пикселей)
+    </div>
+
+    <button class="buy-btn-big" onclick="window.open('https://t.me/твой_ник', '_blank')">
+        НАЖМИ ДЛЯ ПОКУПКИ ЧЕРЕЗ TELEGRAM
+    </button>
+
+    <div class="price-info" style="text-align:center; background:rgba(0,255,0,0.1); padding:20px; border:3px solid #0f0; border-radius:8px; margin:20px auto; max-width:800px;">
+        <span id="price-label">Текущая цена за 5×5 пикселей:</span> 
+        <strong id="current-price">100</strong> 
+        <span id="currency">₽</span>
+    </div>
+
+    <div style="text-align:center; color:#ff0; font-size:1.3rem; margin:15px 0;" id="online-info">
+        Сейчас на сайте: <strong id="online-count">3408</strong> человек онлайн
+    </div>
+
+    <button class="buy-btn" onclick="window.open('https://t.me/твой_ник', '_blank')">
+        Купить → Telegram
+    </button>
+
+    <div class="share-buttons">
+        <a href="https://t.me/share/url?url=https://твой-сайт.pages.dev&text=Купи пиксель навсегда!" class="share-btn" target="_blank">Telegram</a>
+        <a href="https://vk.com/share.php?url=https://твой-сайт.pages.dev" class="share-btn" target="_blank">VK</a>
+        <a href="https://twitter.com/intent/tweet?text=Million Pixels 2026 — купи свой кусочек интернета!&url=https://твой-сайт.pages.dev" class="share-btn" target="_blank">X</a>
+    </div>
+
+    <section>
+        <h2 id="history-title">В честь легенды 2005 года</h2>
+        <p id="history-text">В 2005 году британский студент Алекс Тью создал The Million Dollar Homepage и продал миллион пикселей по $1 за штуку, чтобы оплатить учёбу. Этот сайт создан в честь того легендарного проекта. Теперь ты можешь купить свой кусочек интернета всего от 100 ₽ за 5×5 пикселей. Реклама навсегда!</p>
+    </section>
+
+    <section>
+        <h2 id="how-title">Как это работает</h2>
+        <p id="how-text">Каждый раз, когда кто-то покупает блок, цена для следующих ×1.1.<br>
+        Базовая цена — 100 ₽ за 5×5.<br>
+        <strong>Чем раньше — тем выгоднее!</strong><br><br>
+        <strong>Важно:</strong> Ты можешь 1 раз бесплатно поменять картинку, ссылку и название (или перепродать блок кому угодно).</p>
+    </section>
+
+    <section>
+        <h2 id="buy-title">Как купить?</h2>
+        <ol id="buy-list">
+            <li>Напиши в Telegram</li>
+            <li>Размер и примерное место (кроме середины и VIP)</li>
+            <li>Картинка + ссылка + название</li>
+            <li>Оплати</li>
+            <li>Блок появляется через 5–15 мин</li>
+        </ol>
+    </section>
+
+</div>
+
+<footer>
+    © 2026 Миллион Пикселей 1000×1000 · Уже продано <span id="sold-count">0</span> пикселей
+</footer>
+
+<!-- МОДАЛКА -->
+<div id="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <h2 id="modal-title">Хочешь этот участок?</h2>
+        <p id="modal-coords-text">Координаты: <strong id="modal-coords">X: 0 | Y: 0</strong></p>
+        <p id="modal-size-text">Размер: 5×5 пикселей</p>
+        <p class="modal-price" id="modal-price-text">Цена: <strong id="modal-price">100</strong> <span id="modal-currency">₽</span></p>
+        <button id="modal-book-btn" onclick="bookInTelegram()" style="margin-top:15px; padding:14px 30px; background:#0f0; color:#000; border:none; border-radius:8px; font-size:1.1rem; cursor:pointer;">
+            Забронировать в Telegram
+        </button>
+    </div>
+</div>
+
+<script>
+// ====================== НАСТРОЙКИ ======================
+const TOTAL_PIXELS = 1000000;
+const BASE_RUB = 100;
+const BASE_USD = 1.25;
+let isEnglish = false;
+
+// Примеры блоков (добавляй сколько угодно)
+const soldPixels = [
+    [100, 100, 100, 100, "https://picsum.photos/id/1015/200/200", "https://google.com", "Google", 1000],
+    [300, 400, 50, 50, "https://picsum.photos/id/237/200/200", "https://t.me", "TG Канал", 400],
+    [600, 200, 150, 150, "https://picsum.photos/id/29/300/300", "https://x.ai", "xAI", 5000]
+];
+
+const board = document.getElementById("pixel-board");
+let totalPixels = 0;
+
+// Рисуем блоки и считаем общую площадь
+soldPixels.forEach(([x, y, w, h, imgUrl, link, title]) => {
+    const div = document.createElement("div");
+    div.className = "pixel-block";
+    div.style.left = `${x}px`;
+    div.style.top = `${y}px`;
+    div.style.width = `${w}px`;
+    div.style.height = `${h}px`;
+    div.innerHTML = `<a href="${link}" target="_blank" rel="noopener noreferrer"><img src="${imgUrl}" alt="${title}"></a>`;
+    div.setAttribute("data-title", title);
+    board.appendChild(div);
+    totalPixels += w * h;
+});
+document.getElementById("sold-count").textContent = totalPixels.toLocaleString('ru-RU');
+
+// Прогресс-бар (без текста внутри!)
+const percent = (totalPixels / TOTAL_PIXELS) * 100;
+document.getElementById("progress-bar").style.width = percent + "%";
+// Убрали textContent внутри полоски — теперь только ширина
+document.getElementById("progress-text").textContent = 
+    `Продано ${percent.toFixed(2)}% (${totalPixels.toLocaleString('ru-RU')} / ${TOTAL_PIXELS.toLocaleString('ru-RU')} пикселей)`;
+
+// Онлайн
+setInterval(() => {
+    const rand = Math.max(3408, Math.floor(1000 + Math.random()*3400));
+    document.getElementById("online-count").textContent = rand;
+}, 3500);
+
+// Таймер
+let sessionStart = Date.now();
+let pausedTime = 0;
+let personalBest = parseInt(localStorage.getItem('pixelPersonalBest') || '0');
+let siteRecord = parseInt(localStorage.getItem('pixelSiteRecord') || '67');
+
+function formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = Math.floor(seconds % 60);
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+}
+function updateTimer() {
+    const elapsed = Math.floor((Date.now() - sessionStart + pausedTime) / 1000);
+    document.getElementById("personal-timer").textContent = formatTime(elapsed);
+
+    if (elapsed > personalBest) {
+        personalBest = elapsed;
+        localStorage.setItem('pixelPersonalBest', personalBest);
+    }
+    if (elapsed > siteRecord && Math.random() < 0.08) {
+        siteRecord = elapsed;
+        localStorage.setItem('pixelSiteRecord', siteRecord);
+        document.getElementById("site-record").textContent = Math.floor(siteRecord / 60);
+    }
+}
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) pausedTime += Date.now() - sessionStart;
+    else sessionStart = Date.now();
+});
+setInterval(updateTimer, 1000);
+document.getElementById("site-record").textContent = Math.floor(siteRecord / 60);
+
+// Неон
+function toggleNeon() {
+    document.body.classList.toggle("neon");
+    localStorage.setItem("neon", document.body.classList.contains("neon"));
+}
+if (localStorage.getItem("neon") === "true") document.body.classList.add("neon");
+
+// Полный перевод RU/EN
+function switchLang(lang) {
+    isEnglish = lang === 'en';
+    document.getElementById("btn-ru").classList.toggle("active", !isEnglish);
+    document.getElementById("btn-en").classList.toggle("active", isEnglish);
+
+    const multiplier = Math.pow(1.1, soldPixels.length);
+    const currentPrice = isEnglish 
+        ? (BASE_USD * multiplier).toFixed(2) 
+        : Math.round(BASE_RUB * multiplier);
+
+    document.getElementById("current-price").textContent = currentPrice;
+    document.getElementById("currency").textContent = isEnglish ? "USD" : "₽";
+
+    document.getElementById("title").textContent = isEnglish ? "MILLION PIXELS 2026" : "МИЛЛИОН ПИКСЕЛЕЙ 2026";
+    document.getElementById("subtitle").innerHTML = isEnglish 
+        ? "HUGE 1000×1000 BOARD<br>Price ×1.1 after every sale — the earlier you buy, the cheaper!" 
+        : "ОГРОМНАЯ ДОСКА 1000×1000 пикселей<br>Цена растёт ×1.1 после каждой продажи — чем раньше, тем дешевле!";
+
+    document.getElementById("price-label").textContent = isEnglish ? "Current price for 5×5 pixels:" : "Текущая цена за 5×5 пикселей:";
+    
+    document.getElementById("history-title").textContent = isEnglish ? "In honor of the 2005 legend" : "В честь легенды 2005 года";
+    document.getElementById("history-text").innerHTML = isEnglish 
+        ? "In 2005 British student Alex Tew created The Million Dollar Homepage and sold a million pixels for $1 each to pay for university. This site is created in honor of that legendary project. Now you can buy your piece of the internet from just $1.25 for 5×5 pixels. Eternal advertising!" 
+        : "В 2005 году британский студент Алекс Тью создал The Million Dollar Homepage и продал миллион пикселей по $1 за штуку, чтобы оплатить учёбу. Этот сайт создан в честь того легендарного проекта. Теперь ты можешь купить свой кусочек интернета всего от 100 ₽ за 5×5 пикселей. Реклама навсегда!";
+
+    document.getElementById("how-title").textContent = isEnglish ? "How it works" : "Как это работает";
+    document.getElementById("how-text").innerHTML = isEnglish 
+        ? "Every sale multiplies the price for the next buyers by ×1.1.<br>Base price — $1.25 for 5×5.<br><strong>The earlier — the better!</strong><br><br><strong>Important:</strong> You can change image, link and name once for free (or resell the block to anyone)." 
+        : "Каждый раз, когда кто-то покупает блок, цена для следующих ×1.1.<br>Базовая цена — 100 ₽ за 5×5.<br><strong>Чем раньше — тем выгоднее!</strong><br><br><strong>Важно:</strong> Ты можешь 1 раз бесплатно поменять картинку, ссылку и название (или перепродать блок кому угодно).";
+
+    document.getElementById("buy-title").textContent = isEnglish ? "How to buy?" : "Как купить?";
+    document.getElementById("buy-list").innerHTML = isEnglish 
+        ? `<li>Write in Telegram</li>
+           <li>Size and approximate location (except middle and VIP)</li>
+           <li>Image + link + title</li>
+           <li>Pay</li>
+           <li>Block appears in 5–15 min</li>`
+        : `<li>Напиши в Telegram</li>
+           <li>Размер и примерное место (кроме середины и VIP)</li>
+           <li>Картинка + ссылка + название</li>
+           <li>Оплати</li>
+           <li>Блок появляется через 5–15 мин</li>`;
+
+    // Перевод модалки
+    document.getElementById("modal-title").textContent = isEnglish ? "Want this spot?" : "Хочешь этот участок?";
+    document.getElementById("modal-coords-text").innerHTML = isEnglish ? "Coordinates: <strong id=\"modal-coords\">X: 0 | Y: 0</strong>" : "Координаты: <strong id=\"modal-coords\">X: 0 | Y: 0</strong>";
+    document.getElementById("modal-size-text").textContent = isEnglish ? "Size: 5×5 pixels" : "Размер: 5×5 пикселей";
+    document.getElementById("modal-price-text").innerHTML = isEnglish ? "Price: <strong id=\"modal-price\">100</strong> <span id=\"modal-currency\">USD</span>" : "Цена: <strong id=\"modal-price\">100</strong> <span id=\"modal-currency\">₽</span>";
+    document.getElementById("modal-book-btn").textContent = isEnglish ? "Book in Telegram" : "Забронировать в Telegram";
+}
+
+switchLang('ru');
+
+// Клик по свободному месту
+document.getElementById("pixel-board").addEventListener("click", function(e) {
+    const rect = this.getBoundingClientRect();
+    let x = Math.floor(e.clientX - rect.left);
+    let y = Math.floor(e.clientY - rect.top);
+
+    x = Math.floor(x / 5) * 5;
+    y = Math.floor(y / 5) * 5;
+
+    const clicked = document.elementFromPoint(e.clientX, e.clientY);
+    if (clicked && (clicked.classList.contains("pixel-block") || clicked.classList.contains("vip-zone"))) {
+        return;
+    }
+
+    document.getElementById("modal-coords").textContent = `X: ${x} | Y: ${y}`;
+
+    const multiplier = Math.pow(1.1, soldPixels.length);
+    const price = isEnglish 
+        ? (BASE_USD * multiplier).toFixed(2) 
+        : Math.round(BASE_RUB * multiplier);
+
+    document.getElementById("modal-price").textContent = price;
+    document.getElementById("modal-currency").textContent = isEnglish ? "USD" : "₽";
+
+    document.getElementById("modal").style.display = "flex";
+});
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+function bookInTelegram() {
+    const coords = document.getElementById("modal-coords").textContent;
+    const price = document.getElementById("modal-price").textContent;
+    const currency = document.getElementById("modal-currency").textContent;
+    const text = isEnglish 
+        ? `I want to buy 5×5 pixels at ${coords} for ${price} ${currency}`
+        : `Хочу купить 5×5 пикселей по координатам ${coords} за ${price} ${currency}`;
+    window.open(`https://t.me/твой_ник?text=${encodeURIComponent(text)}`, "_blank");
+    closeModal();
+}
+</script>
+
+</body>
+</html>
